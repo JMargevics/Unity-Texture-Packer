@@ -1,0 +1,5 @@
+<UXML xmlns="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xmlns:uiex="UnityEditor.Experimental.UIElements">
+
+    <uie:ToolbarMenu  name="SelectChannelMenu" />
+
+</UXML>

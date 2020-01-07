@@ -1,0 +1,68 @@
+﻿.header-container {
+	flex-direction: row;
+	justify-content: flex-end;
+	margin-top: 5px;
+	margin-bottom: 10px;
+}
+
+.res-button {
+	width: 52px;
+}
+
+#InputTexture {
+	width: 141px;
+	margin-right: 10px;
+}
+
+#ColorTexture {
+	width: 174px;
+	margin-right: 10px;
+}
+
+#NameField {
+	width: 242px;
+}
+.channel-title {
+	-unity-font-style: bold;
+	margin-right: 1px;
+}
+
+#SelectChannelMenu{
+	padding-right: 5px;
+}
+
+.texture-list {
+	flex-direction: column;
+}
+
+.hidden {
+	display: none;
+}
+
+.container-row {
+	flex-direction: row;
+	padding-top: 5px;
+	padding-left: 5px;
+	padding-bottom: 5px;
+}
+
+.invert-toggle {
+	margin-left: 5px;
+	width: 70px;
+	
+}
+
+.invert-toggle > .unity-base-field__input {
+	justify-content: center;
+}
+
+.texture-item-container {
+	align-items: flex-start;
+	flex-direction: row;
+	margin-bottom: 5px;
+	padding-right: 5px;
+}
+
+.container-row:hover {
+	background-color: #989898;
+}
