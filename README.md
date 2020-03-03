@@ -1,5 +1,10 @@
 # Unity-Texture-Packer
-
+![Texture Packer](https://i.imgur.com/c9FgIr9.png)
+## How to use
 - **Enable Read/Write on each texture you use!**
 - Supports up to 4k JPG/EXR/PNG/TGA
 - Pack textures or solid colors into channels
+## Known issues
+- Create and use *Assets/Generated* folder to avoid errors
+## Future improvements
+- Switch to GPU mode via Render Texture
