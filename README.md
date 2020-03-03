@@ -8,3 +8,4 @@
 - Create and use *Assets/Generated* folder to avoid errors
 ## Future improvements
 - Switch to GPU mode via Render Texture
+- 8k encode
