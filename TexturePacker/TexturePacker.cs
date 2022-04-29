@@ -38,7 +38,7 @@ public class TexturePacker : EditorWindow
                             {"ChannelA", false }
                         };
 
-    [MenuItem("Edit/Render Pipeline/Texture Packer")]
+    [MenuItem("Window/Texture Packer")]
     public static void ShowWindow()
     {
         var window = GetWindow<TexturePacker>();
