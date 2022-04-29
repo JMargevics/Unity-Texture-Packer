@@ -54,8 +54,8 @@ public class TexturePacker : EditorWindow
         var UXMLTree = AssetDatabase.LoadAssetAtPath<VisualTreeAsset>("Assets/TexturePacker/UI/index.uxml");
         UXMLTree.CloneTree(root);
 
-        outputTextureSettings.name = "Generated/TextureName.png";
-        root.Q<TextField>("NameField").value = "Generated/TextureName.png";
+        outputTextureSettings.name = "TextureName";
+        
         outputTextureSettings.resolution = 1024;
 
         //Set ObjectField filters to Texture2D. Need to move this to UXML
@@ -113,7 +113,7 @@ public class TexturePacker : EditorWindow
         root.Q<Button>("ResetInputs").clickable.clicked += () =>
         {
             //Reset name and res
-            root.Q<TextField>("NameField").value = "Generated/TextureName.png";
+            
             outputTextureSettings.name = "Generated/TextureName.png";
             outputTextureSettings.resolution = 1024;
             ToolLabel.text = "1024";
@@ -175,12 +175,12 @@ public class TexturePacker : EditorWindow
                     newColorTex.SetPixel(1, 2, ve.parent.Q<ColorField>().value);
                     newColorTex.SetPixel(2, 1, ve.parent.Q<ColorField>().value);
                     newColorTex.SetPixel(2, 2, ve.parent.Q<ColorField>().value);
-                    tex.Resize(2, 2);
+                    tex.Reinitialize(2, 2);
                     tex.SetPixels(newColorTex.GetPixels());
                 }
                 else
                 {
-                    tex.Resize(_tex.height, _tex.width);
+                    tex.Reinitialize(_tex.height, _tex.width);
                     tex.SetPixels(_tex.GetPixels());
                     tex.Apply();
                 }
@@ -263,17 +263,18 @@ public class TexturePacker : EditorWindow
         outputTexture.Apply();
 
         //Save texture to disc
-        outputTextureSettings.name = root.Q<TextField>("NameField").value;
         byte[] texBytes = new byte[0];
-        if (outputTextureSettings.name.EndsWith("jpg"))
-            texBytes = outputTexture.EncodeToJPG();
-        else if
-            (outputTextureSettings.name.EndsWith("exr")) texBytes = outputTexture.EncodeToPNG();
-        else if
-            (outputTextureSettings.name.EndsWith("png")) texBytes = outputTexture.EncodeToPNG();
-        else
-            texBytes = outputTexture.EncodeToTGA();
+        var path = EditorUtility.SaveFilePanel(
+            "Save mask map as PNG",
+            Application.dataPath,
+            outputTextureSettings.name + ".png",
+            "png");
 
-        File.WriteAllBytes(Application.dataPath + "/" + outputTextureSettings.name, texBytes);
+        if (path.Length != 0)
+        {
+            texBytes = outputTexture.EncodeToPNG();
+            if (texBytes != null)
+                File.WriteAllBytes(path, texBytes);
+        }
     }
 }

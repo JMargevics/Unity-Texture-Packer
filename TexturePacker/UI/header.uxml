@@ -1,6 +1,5 @@
 <UXML xmlns="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xmlns:uiex="UnityEditor.Experimental.UIElements">
   <VisualElement class="header-container">
-    <TextField name="NameField" />
    
     <uiex:ToolbarMenu name="ŖesolutionToolbar" class="res-button" />
     <Button text="Save" name="SaveTexture" />
