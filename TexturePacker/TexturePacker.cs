@@ -1,6 +1,7 @@
 ﻿using System;
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.Rendering;
 using UnityEditor.UIElements;
 using UnityEngine.UIElements;
 using System.IO;
@@ -9,15 +10,8 @@ using System.Collections.Generic;
 
 public class TexturePacker : EditorWindow
 {
-    struct TextureSettings
-    {
-        public int resolution;
-        public string name;
-    }
-
     VisualElement root;
 
-    enum Channels { R, G, B, A }
     TextureSettings outputTextureSettings = new TextureSettings();
     Label ToolLabel;
     readonly string classQ = "texture-item-container";
@@ -37,6 +31,24 @@ public class TexturePacker : EditorWindow
                             {"ChannelB", false },
                             {"ChannelA", false }
                         };
+
+
+    enum Channels { R, G, B, A }
+    struct TextureSettings
+    {
+        public int resolution;
+        public string name;
+    }
+    struct Slot
+    {
+        public Slot(Texture2D _tex, Channels _chan)
+        {
+            texture = _tex;
+            channelDestination = _chan;
+        }
+        public Texture2D texture { get; }
+        public Channels channelDestination { get; }
+    }
 
     [MenuItem("Window/Texture Packer")]
     public static void ShowWindow()
@@ -61,13 +73,16 @@ public class TexturePacker : EditorWindow
         //Set ObjectField filters to Texture2D. Need to move this to UXML
         root.Query<ObjectField>().ForEach((ObjectField a) => a.objectType = typeof(Texture2D));
 
+
+        //TODO interactively add resolutions
         var ResToolbar = root.Q<ToolbarMenu>();
-        ResToolbar.Add(ToolLabel = new Label() { text = "1024" });
+        ResToolbar.Add(ToolLabel = new Label() { text = outputTextureSettings.resolution.ToString() });
         ResToolbar.menu.AppendAction("256", (DropdownMenuAction a) => { ToolLabel.text = a.name; outputTextureSettings.resolution = 256; });
         ResToolbar.menu.AppendAction("512", (DropdownMenuAction a) => { ToolLabel.text = a.name; outputTextureSettings.resolution = 512; });
         ResToolbar.menu.AppendAction("1024", (DropdownMenuAction a) => { ToolLabel.text = a.name; outputTextureSettings.resolution = 1024; });
         ResToolbar.menu.AppendAction("2048", (DropdownMenuAction a) => { ToolLabel.text = a.name; outputTextureSettings.resolution = 2048; });
         ResToolbar.menu.AppendAction("4096", (DropdownMenuAction a) => { ToolLabel.text = a.name; outputTextureSettings.resolution = 4096; });
+        //ResToolbar.menu.AppendAction("8192", (DropdownMenuAction a) => { ToolLabel.text = a.name; outputTextureSettings.resolution = 8192; });
 
         root.Query<ToolbarMenu>("ToolbarMode")
             .ForEach((ToolbarMenu t) =>
@@ -108,22 +123,23 @@ public class TexturePacker : EditorWindow
         });
 
         root.Q<Button>("SaveTexture").clickable.clicked += () => SaveTexture();
+        root.Q<Button>("ResetInputs").clickable.clicked += () => ResetUI();
 
-        //Reset stuff
-        root.Q<Button>("ResetInputs").clickable.clicked += () =>
-        {
-            //Reset name and res
-            
-            outputTextureSettings.name = "Generated/TextureName.png";
-            outputTextureSettings.resolution = 1024;
-            ToolLabel.text = "1024";
+    }
 
-            //Set label back to R, reset textures
-            root.Query<Label>("ChannelLabel").ForEach((Label a) => a.text = "R");
-            root.Query<ObjectField>().ForEach((ObjectField o) => o.value = null);
+    private void ResetUI()
+    {
+        //Reset name and res  
+        outputTextureSettings.name = "TextureName";
+        outputTextureSettings.resolution = 1024;
+        ToolLabel.text = outputTextureSettings.resolution.ToString();
 
-            //Update modes, show texture ObjectFields
-            channelModes = new Hashtable()
+        //Set label back to R, reset textures
+        root.Query<Label>("ChannelLabel").ForEach((Label a) => a.text = "R");
+        root.Query<ObjectField>().ForEach((ObjectField o) => o.value = null);
+
+        //Update modes, show texture ObjectFields
+        channelModes = new Hashtable()
                             {
                                 {"ChannelR", "texture" },
                                 {"ChannelG", "texture" },
@@ -131,8 +147,8 @@ public class TexturePacker : EditorWindow
                                 {"ChannelA", "texture" }
                             };
 
-            //Reset invert states and ToolbarToggle values
-            InvertStates = new Hashtable()
+        //Reset invert states and ToolbarToggle values
+        InvertStates = new Hashtable()
                         {
                             {"ChannelR", false },
                             {"ChannelG", false },
@@ -140,20 +156,24 @@ public class TexturePacker : EditorWindow
                             {"ChannelA", false }
                         };
 
-            root.Query<ToolbarToggle>().ForEach((ToolbarToggle t) => { t.value = false; });
-            root.Query<ColorField>().ForEach((ColorField c) => { c.value = new Color(0f, 0f, 0f, 1f); c.AddToClassList("hidden"); });
-            root.Query<TemplateContainer>("TextureInputObject").ForEach((TemplateContainer o) => o.RemoveFromClassList("hidden"));
-            root.Query<TemplateContainer>("TextureChannels").ForEach((TemplateContainer o) => o.RemoveFromClassList("hidden"));
-        };
+        root.Query<ToolbarToggle>().ForEach((ToolbarToggle t) => { t.value = false; });
+        root.Query<ColorField>().ForEach((ColorField c) => { c.value = new Color(0f, 0f, 0f, 1f); c.AddToClassList("hidden"); });
+        root.Query<TemplateContainer>("TextureInputObject").ForEach((TemplateContainer o) => o.RemoveFromClassList("hidden"));
+        root.Query<TemplateContainer>("TextureChannels").ForEach((TemplateContainer o) => o.RemoveFromClassList("hidden"));
+    }
 
+    private Texture2D CreateSolidColorTex(Color color)
+    {
+        Texture2D tex = new Texture2D(1, 1, TextureFormat.RGBA32, false);
+        tex.SetPixel(0, 0, color);
+        tex.Apply();
+        return tex;
     }
 
     private void SaveTexture()
-    {
-        List<Color[]> pixelData = new List<Color[]>();
-        Texture2D outputTexture = new Texture2D(outputTextureSettings.resolution, outputTextureSettings.resolution, TextureFormat.RGBA32, false);
-        Texture2D newTex = new Texture2D(outputTextureSettings.resolution, outputTextureSettings.resolution, TextureFormat.RGBA32, false);
-        Texture2D tex = new Texture2D(outputTextureSettings.resolution, outputTextureSettings.resolution, TextureFormat.RGBA32, false);
+    { 
+        
+        List<Slot> slots = new();
 
         //Iterate texture-item-container elements.
         root.Query<VisualElement>(className: classQ).ForEach(
@@ -161,111 +181,66 @@ public class TexturePacker : EditorWindow
             {
                 //Get texture from the ObjectField
                 var _tex = ve.Q<ObjectField>().value as Texture2D;
+                Texture2D slotTexture = new Texture2D(outputTextureSettings.resolution, outputTextureSettings.resolution, TextureFormat.RGBA32, true);
 
+                //Fallback if can't read the texture
                 if (!_tex && (string)channelModes[ve.parent.name] == "texture")
                 {
-
-                    tex = Texture2D.whiteTexture;
+                    slotTexture = Texture2D.whiteTexture;
                 }
                 else if (((string)channelModes[ve.parent.name] == "color"))
                 {
-                    //Generate a 2x2 texture using color value from the element
-                    Texture2D newColorTex = new Texture2D(2, 2);
-                    newColorTex.SetPixel(1, 1, ve.parent.Q<ColorField>().value);
-                    newColorTex.SetPixel(1, 2, ve.parent.Q<ColorField>().value);
-                    newColorTex.SetPixel(2, 1, ve.parent.Q<ColorField>().value);
-                    newColorTex.SetPixel(2, 2, ve.parent.Q<ColorField>().value);
-                    tex.Reinitialize(2, 2);
-                    tex.SetPixels(newColorTex.GetPixels());
+                    //Generate a 1x1 solid color texture
+                    slotTexture.Reinitialize(1, 1);
+                    slotTexture.SetPixels(CreateSolidColorTex(ve.parent.Q<ColorField>().value).GetPixels());
+                    slotTexture.Apply();
                 }
                 else
                 {
-                    tex.Reinitialize(_tex.height, _tex.width);
-                    tex.SetPixels(_tex.GetPixels());
-                    tex.Apply();
-                }
-
-                //Force square texture
-                if (tex.height != outputTextureSettings.resolution ||
-                    tex.width != outputTextureSettings.resolution)
-                {
-                    TextureScale.Bilinear(tex, outputTextureSettings.resolution, outputTextureSettings.resolution);
+                    slotTexture.Reinitialize(_tex.height, _tex.width);
+                    slotTexture.SetPixels(_tex.GetPixels());
+                    slotTexture.Apply();
                 }
 
                 //Get the value from channel select dropdown menu, parse to enumerator and save to mode variable
-                Enum.TryParse(ve.Q<Label>("ChannelLabel").text, out Channels mode);
+                Enum.TryParse(ve.Q<Label>("ChannelLabel").text, out Channels channelDest);
 
-                for (int i = 0; i < outputTextureSettings.resolution; i++)
-                {
-                    for (int j = 0; j < outputTextureSettings.resolution; j++)
-                    {
-                        Color px = newTex.GetPixel(i, j);
-
-                        float _px = new float();
-                        switch (mode)
-                        {
-                            case Channels.R:                     
-                                _px = tex.GetPixel(i, j).r;
-                                break;
-                            case Channels.G:
-                                _px = tex.GetPixel(i, j).g;
-                                break;
-                            case Channels.B:
-                                _px = tex.GetPixel(i, j).b;
-                                break;
-                            case Channels.A:
-                                _px = tex.GetPixel(i, j).a;
-                                break;
-                        }
-
-                        //We get label's name and parse it into ENUM
-                        switch (ve.parent.name)
-                        {
-                            case "ChannelR":
-                                px.r = _px;
-                                break;
-                            case "ChannelG":
-                                px.g = _px;
-                                break;
-                            case "ChannelB":
-                                px.b = _px;
-                                break;
-                            case "ChannelA":
-                                px.a = _px;
-                                break;
-                        }
-
-                        //Blit final pixel
-                        newTex.SetPixel(i, j, px);
-                    }
-                }
+                //populate with source texture and their channel destinations
+                slots.Add(new Slot(slotTexture, channelDest));
             }
         );
 
-        var ipx = newTex.GetPixels();
+        Material shuffleTexMat = new Material(Shader.Find("Hidden/TexShuffle"));
+        shuffleTexMat.hideFlags = HideFlags.DontUnloadUnusedAsset;
 
-        //Invert texture channels if any of the toggles are true. TODO Move code to block above
-        if ((bool) InvertStates["ChannelR"] == true ||
-            (bool) InvertStates["ChannelG"] == true ||
-            (bool) InvertStates["ChannelB"] == true ||
-            (bool) InvertStates["ChannelA"] == true )
-        {
-            for (int i=0; i < ipx.Length; i++)
-            {
-                if ((bool)InvertStates["ChannelR"] == true) ipx[i].r = 1.0f - ipx[i].r;
-                if ((bool)InvertStates["ChannelG"] == true) ipx[i].g = 1.0f - ipx[i].g;
-                if ((bool)InvertStates["ChannelB"] == true) ipx[i].b = 1.0f - ipx[i].b;
-                if ((bool)InvertStates["ChannelA"] == true) ipx[i].a = 1.0f - ipx[i].a;
-            }
-        }
+        shuffleTexMat.SetTexture("_Slot0Tex", slots[0].texture);
+        shuffleTexMat.SetFloat("_Slot0Channel", (float)slots[0].channelDestination);
 
-        outputTexture.SetPixels(ipx);
+        shuffleTexMat.SetTexture("_Slot1Tex", slots[1].texture);
+        shuffleTexMat.SetFloat("_Slot0Channel", (float)slots[1].channelDestination);
+
+        shuffleTexMat.SetTexture("_Slot2Tex", slots[2].texture);
+        shuffleTexMat.SetFloat("_Slot0Channel", (float)slots[2].channelDestination);
+
+        shuffleTexMat.SetTexture("_Slot3Tex", slots[3].texture);
+        shuffleTexMat.SetFloat("_Slot0Channel", (float)slots[3].channelDestination);
+
+
+        Texture2D outputTexture = new Texture2D(outputTextureSettings.resolution, outputTextureSettings.resolution, TextureFormat.RGBA32, true);
+        outputTexture.hideFlags = HideFlags.DontUnloadUnusedAsset;
+
+        RenderTexture outputRT = new RenderTexture(outputTextureSettings.resolution, outputTextureSettings.resolution, 0, RenderTextureFormat.ARGB32);
+        Graphics.Blit(Texture2D.whiteTexture, outputRT, shuffleTexMat);
+
+        RenderTexture previousActive = RenderTexture.active;
+        RenderTexture.active = outputRT;
+        outputTexture.ReadPixels(new Rect(0, 0, outputTextureSettings.resolution, outputTextureSettings.resolution), 0, 0, false);
         outputTexture.Apply();
-
-        //Save texture to disc
+        RenderTexture.active = previousActive;
+         
         byte[] texBytes = new byte[0];
         var path = EditorUtility.SaveFilePanel(
-            "Save mask map as PNG",
+            "Save texture as PNG",
             Application.dataPath,
             outputTextureSettings.name + ".png",
             "png");
