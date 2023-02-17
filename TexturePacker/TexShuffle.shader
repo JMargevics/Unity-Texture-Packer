@@ -51,7 +51,7 @@ Shader "Hidden/TexShuffle"
 
             sampler2D _Slot0Tex, _Slot1Tex, _Slot2Tex, _Slot3Tex;
             float _Slot0Channel, _Slot1Channel, _Slot2Channel, _Slot3Channel;
-            vector _Inverts;
+            float4 _Inverts;
 
             v2f vert(appdata v)
             {

@@ -193,7 +193,7 @@ public class TexturePacker : EditorWindow
                 if (!_tex && (string)channelModes[ve.parent.name] == "texture")
                 {
                     slotTexture.Reinitialize(1, 1);
-                    slotTexture.SetPixels(CreateSolidColorTex(Color.white).GetPixels());
+                    slotTexture.SetPixels(CreateSolidColorTex(Color.grey).GetPixels());
                     slotTexture.Apply();
                 }
                 else if (((string)channelModes[ve.parent.name] == "color"))
@@ -262,5 +262,8 @@ public class TexturePacker : EditorWindow
             if (texBytes != null)
                 File.WriteAllBytes(path, texBytes);
         }
+
+        
+        slots.Clear();
     }
 }
