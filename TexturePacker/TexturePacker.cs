@@ -90,7 +90,7 @@ public class TexturePacker : EditorWindow
         ResToolbar.menu.AppendAction("1024", (DropdownMenuAction a) => { ToolLabel.text = a.name; outputTextureSettings.resolution = 1024; });
         ResToolbar.menu.AppendAction("2048", (DropdownMenuAction a) => { ToolLabel.text = a.name; outputTextureSettings.resolution = 2048; });
         ResToolbar.menu.AppendAction("4096", (DropdownMenuAction a) => { ToolLabel.text = a.name; outputTextureSettings.resolution = 4096; });
-        //ResToolbar.menu.AppendAction("8192", (DropdownMenuAction a) => { ToolLabel.text = a.name; outputTextureSettings.resolution = 8192; });
+        ResToolbar.menu.AppendAction("8192", (DropdownMenuAction a) => { ToolLabel.text = a.name; outputTextureSettings.resolution = 8192; });
 
         root.Query<ToolbarMenu>("ToolbarMode")
             .ForEach((ToolbarMenu t) =>
@@ -248,6 +248,7 @@ public class TexturePacker : EditorWindow
         outputTexture.ReadPixels(new Rect(0, 0, outputTextureSettings.resolution, outputTextureSettings.resolution), 0, 0, false);
         outputTexture.Apply();
         RenderTexture.active = previousActive;
+        outputRT.Release();
          
         byte[] texBytes = new byte[0];
         var path = EditorUtility.SaveFilePanel(
@@ -263,7 +264,8 @@ public class TexturePacker : EditorWindow
                 File.WriteAllBytes(path, texBytes);
         }
 
-        
+        DestroyImmediate(outputTexture);
+        DestroyImmediate(shuffleTexMat);
         slots.Clear();
     }
 }
