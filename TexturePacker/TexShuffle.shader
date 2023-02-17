@@ -39,8 +39,7 @@ Shader "Hidden/TexShuffle"
             struct v2f
             {
                 float2 uv : TEXCOORD0;
-                float4 pos : SV_POSITION;
-                fixed3 color : COLOR0;
+                float4 pos : SV_POSITION;      
             };
             
             struct appdata
@@ -62,12 +61,13 @@ Shader "Hidden/TexShuffle"
             }
             float GetChannel(sampler2D tex, float channelNum, float2 coord)
             {
-                if (channelNum == 0) return tex2D(tex, coord).r;
-                if (channelNum == 1) return tex2D(tex, coord).g;
-                if (channelNum == 2) return tex2D(tex, coord).b;
-                if (channelNum == 3) return tex2D(tex, coord).a;
-
-                else return 0;
+                float value = 0;
+                if (channelNum == 0) { value = tex2D(tex, coord).r; }
+                else if (channelNum == 1) { value = tex2D(tex, coord).g; }
+                else if (channelNum == 2) { value = tex2D(tex, coord).b; }
+                else if (channelNum == 3) { value = tex2D(tex, coord).a; }
+                
+                return value;
             }
 
             float4 frag(v2f i) : SV_Target
