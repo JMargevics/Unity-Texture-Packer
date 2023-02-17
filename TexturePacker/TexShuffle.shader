@@ -16,7 +16,7 @@ Shader "Hidden/TexShuffle"
         _Slot3Tex("A Slot source texture", 2D) = "white"{}
         _Slot3Channel("A Slot channel", float) = 0
 
-        _Inverts("Invert states", Vector) = (1,1,1,1)
+        _Inverts("Invert states", Vector) = (0,0,0,0)
 
     }
 
@@ -74,10 +74,10 @@ Shader "Hidden/TexShuffle"
             {
                 float4 col = float4(0,0,0,0);
 
-                col.r = GetChannel(_Slot0Tex, _Slot0Channel, i.uv);
-                col.g = GetChannel(_Slot1Tex, _Slot1Channel, i.uv);
-                col.b = GetChannel(_Slot2Tex, _Slot2Channel, i.uv);
-                col.a = GetChannel(_Slot3Tex, _Slot3Channel, i.uv);
+                col.r = abs(_Inverts.r - GetChannel(_Slot0Tex, _Slot0Channel, i.uv));
+                col.g = abs(_Inverts.g - GetChannel(_Slot1Tex, _Slot1Channel, i.uv));
+                col.b = abs(_Inverts.b - GetChannel(_Slot2Tex, _Slot2Channel, i.uv));
+                col.a = abs(_Inverts.a - GetChannel(_Slot3Tex, _Slot3Channel, i.uv));
 
                 return col;
             }

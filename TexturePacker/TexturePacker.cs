@@ -45,9 +45,17 @@ public class TexturePacker : EditorWindow
         {
             texture = _tex;
             channelDestination = _chan;
+            invert = false;
+        }
+        public Slot(Texture2D _tex, Channels _chan, bool _inv)
+        {
+            texture = _tex;
+            channelDestination = _chan;
+            invert = _inv;
         }
         public Texture2D texture { get; }
         public Channels channelDestination { get; }
+        public bool invert { get; }
     }
 
     [MenuItem("Window/Texture Packer")]
@@ -124,7 +132,6 @@ public class TexturePacker : EditorWindow
 
         root.Q<Button>("SaveTexture").clickable.clicked += () => SaveTexture();
         root.Q<Button>("ResetInputs").clickable.clicked += () => ResetUI();
-
     }
 
     private void ResetUI()
@@ -171,8 +178,7 @@ public class TexturePacker : EditorWindow
     }
 
     private void SaveTexture()
-    { 
-        
+    {   
         List<Slot> slots = new();
 
         //Iterate texture-item-container elements.
@@ -186,11 +192,12 @@ public class TexturePacker : EditorWindow
                 //Fallback if can't read the texture
                 if (!_tex && (string)channelModes[ve.parent.name] == "texture")
                 {
-                    slotTexture = Texture2D.whiteTexture;
+                    slotTexture.Reinitialize(1, 1);
+                    slotTexture.SetPixels(CreateSolidColorTex(Color.white).GetPixels());
+                    slotTexture.Apply();
                 }
                 else if (((string)channelModes[ve.parent.name] == "color"))
                 {
-                    //Generate a 1x1 solid color texture
                     slotTexture.Reinitialize(1, 1);
                     slotTexture.SetPixels(CreateSolidColorTex(ve.parent.Q<ColorField>().value).GetPixels());
                     slotTexture.Apply();
@@ -206,7 +213,7 @@ public class TexturePacker : EditorWindow
                 Enum.TryParse(ve.Q<Label>("ChannelLabel").text, out Channels channelDest);
 
                 //populate with source texture and their channel destinations
-                slots.Add(new Slot(slotTexture, channelDest));
+                slots.Add(new Slot(slotTexture, channelDest, ve.parent.parent.Q<ToolbarToggle>().value));
             }
         );
 
@@ -217,14 +224,18 @@ public class TexturePacker : EditorWindow
         shuffleTexMat.SetFloat("_Slot0Channel", (float)slots[0].channelDestination);
 
         shuffleTexMat.SetTexture("_Slot1Tex", slots[1].texture);
-        shuffleTexMat.SetFloat("_Slot0Channel", (float)slots[1].channelDestination);
+        shuffleTexMat.SetFloat("_Slot1Channel", (float)slots[1].channelDestination);
 
         shuffleTexMat.SetTexture("_Slot2Tex", slots[2].texture);
-        shuffleTexMat.SetFloat("_Slot0Channel", (float)slots[2].channelDestination);
+        shuffleTexMat.SetFloat("_Slot2Channel", (float)slots[2].channelDestination);
 
         shuffleTexMat.SetTexture("_Slot3Tex", slots[3].texture);
-        shuffleTexMat.SetFloat("_Slot0Channel", (float)slots[3].channelDestination);
+        shuffleTexMat.SetFloat("_Slot3Channel", (float)slots[3].channelDestination);
 
+        shuffleTexMat.SetVector("_Inverts", new Vector4(Convert.ToSingle(slots[0].invert),
+                                                        Convert.ToSingle(slots[1].invert),
+                                                        Convert.ToSingle(slots[2].invert),
+                                                        Convert.ToSingle(slots[3].invert)));
 
         Texture2D outputTexture = new Texture2D(outputTextureSettings.resolution, outputTextureSettings.resolution, TextureFormat.RGBA32, true);
         outputTexture.hideFlags = HideFlags.DontUnloadUnusedAsset;

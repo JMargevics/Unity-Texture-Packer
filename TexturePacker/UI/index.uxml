@@ -8,19 +8,19 @@
     <VisualElement class="container-row">
       <Instance template="TextureItem" name="ChannelR" />
       <Label text="copy to R " class="channel-title" />
-      <uiex:ToolbarToggle text="Invert" class="invert-toggle" name="InvertA"/>
+      <uiex:ToolbarToggle text="Invert" class="invert-toggle" name="InvertR"/>
     </VisualElement>
 
     <VisualElement class="container-row">
       <Instance template="TextureItem" name="ChannelG" />
       <Label text="copy to G " class="channel-title" />
-      <uiex:ToolbarToggle text="Invert" class="invert-toggle" name="InvertA"/>
+      <uiex:ToolbarToggle text="Invert" class="invert-toggle" name="InvertG"/>
     </VisualElement>
 
     <VisualElement class="container-row">
       <Instance template="TextureItem" name="ChannelB" />
       <Label text="copy to B " class="channel-title" />
-      <uiex:ToolbarToggle text="Invert" class="invert-toggle" name="InvertA"/>
+      <uiex:ToolbarToggle text="Invert" class="invert-toggle" name="InvertB"/>
     </VisualElement>
 
     <VisualElement class="container-row">
