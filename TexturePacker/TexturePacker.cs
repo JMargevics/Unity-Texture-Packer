@@ -179,7 +179,7 @@ public class TexturePacker : EditorWindow
 
     private void SaveTexture()
     {   
-        List<Slot> slots = new();
+        List<Slot> slots = new List<Slot>();
 
         //Iterate texture-item-container elements.
         root.Query<VisualElement>(className: classQ).ForEach(
@@ -192,19 +192,22 @@ public class TexturePacker : EditorWindow
                 //Fallback if can't read the texture
                 if (!_tex && (string)channelModes[ve.parent.name] == "texture")
                 {
-                    slotTexture.Reinitialize(1, 1);
+                    slotTexture.Resize(1, 1);
+                    //slotTexture.Reinitialize(1, 1);
                     slotTexture.SetPixels(CreateSolidColorTex(Color.grey).GetPixels());
                     slotTexture.Apply();
                 }
                 else if (((string)channelModes[ve.parent.name] == "color"))
                 {
-                    slotTexture.Reinitialize(1, 1);
+                    slotTexture.Resize(1, 1);
+                    //slotTexture.Reinitialize(1, 1);
                     slotTexture.SetPixels(CreateSolidColorTex(ve.parent.Q<ColorField>().value).GetPixels());
                     slotTexture.Apply();
                 }
                 else
                 {
-                    slotTexture.Reinitialize(_tex.height, _tex.width);
+                    slotTexture.Resize(_tex.height, _tex.width);
+                    //slotTexture.Reinitialize(_tex.height, _tex.width);
                     slotTexture.SetPixels(_tex.GetPixels());
                     slotTexture.Apply();
                 }
@@ -248,7 +251,7 @@ public class TexturePacker : EditorWindow
         outputTexture.ReadPixels(new Rect(0, 0, outputTextureSettings.resolution, outputTextureSettings.resolution), 0, 0, false);
         outputTexture.Apply();
         RenderTexture.active = previousActive;
-        outputRT.Release();
+        //outputRT.Release();
          
         byte[] texBytes = new byte[0];
         var path = EditorUtility.SaveFilePanel(
