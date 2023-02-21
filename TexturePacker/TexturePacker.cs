@@ -187,27 +187,25 @@ public class TexturePacker : EditorWindow
             {
                 //Get texture from the ObjectField
                 var _tex = ve.Q<ObjectField>().value as Texture2D;
-                Texture2D slotTexture = new Texture2D(outputTextureSettings.resolution, outputTextureSettings.resolution, TextureFormat.RGBA32, true);
+                Texture2D slotTexture;
 
                 //Fallback if can't read the texture
                 if (!_tex && (string)channelModes[ve.parent.name] == "texture")
                 {
-                    slotTexture.Resize(1, 1);
-                    //slotTexture.Reinitialize(1, 1);
+
+                    slotTexture = new Texture2D(1, 1, TextureFormat.RGBA32, true);
                     slotTexture.SetPixels(CreateSolidColorTex(Color.grey).GetPixels());
                     slotTexture.Apply();
                 }
-                else if (((string)channelModes[ve.parent.name] == "color"))
+                else if ((string)channelModes[ve.parent.name] == "color")
                 {
-                    slotTexture.Resize(1, 1);
-                    //slotTexture.Reinitialize(1, 1);
+                    slotTexture = new Texture2D(1, 1, TextureFormat.RGBA32, true);
                     slotTexture.SetPixels(CreateSolidColorTex(ve.parent.Q<ColorField>().value).GetPixels());
                     slotTexture.Apply();
                 }
                 else
                 {
-                    slotTexture.Resize(_tex.height, _tex.width);
-                    //slotTexture.Reinitialize(_tex.height, _tex.width);
+                    slotTexture = new Texture2D(_tex.width, _tex.height, TextureFormat.RGBA32, true);
                     slotTexture.SetPixels(_tex.GetPixels());
                     slotTexture.Apply();
                 }
@@ -251,7 +249,7 @@ public class TexturePacker : EditorWindow
         outputTexture.ReadPixels(new Rect(0, 0, outputTextureSettings.resolution, outputTextureSettings.resolution), 0, 0, false);
         outputTexture.Apply();
         RenderTexture.active = previousActive;
-        //outputRT.Release();
+        outputRT.Release();
          
         byte[] texBytes = new byte[0];
         var path = EditorUtility.SaveFilePanel(
@@ -268,7 +266,10 @@ public class TexturePacker : EditorWindow
         }
 
         DestroyImmediate(outputTexture);
-        DestroyImmediate(shuffleTexMat);
+        foreach(Slot sl in slots)
+        {
+            DestroyImmediate(sl.texture);
+        }
         slots.Clear();
     }
 }
