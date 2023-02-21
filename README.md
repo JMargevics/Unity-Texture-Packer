@@ -3,8 +3,6 @@
 
 ## How to use
 - **Enable Read/Write on each texture you use!**
-- Outputs PNG up to 4k
+- Outputs PNG up to 8k
 - Pack textures or solid colors into channels
-## Future improvements
-- Switch to GPU mode via Render Texture
-- 8k encode
+- Have some basic GPU
