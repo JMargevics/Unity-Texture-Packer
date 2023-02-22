@@ -5,4 +5,7 @@
 - **Enable Read/Write on each texture you use!**
 - Outputs PNG up to 8k
 - Pack textures or solid colors into channels
-- Have some basic GPU
+
+## Requirements
+- Unity 2020.3+
+- Any basic GPU
