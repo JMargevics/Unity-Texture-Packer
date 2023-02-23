@@ -1,0 +1,9 @@
+{
+  "name": "com.jansm.texturepacker",
+  "version": "0.0.1",
+  "displayName": "Texture Packer",
+  "description": "Basic texture packer. Pack texture channels or solid colors.",
+  "unity": "2020.3",
+  "unityRelease": "0f1",
+  "documentationUrl": "https://github.com/JMargevics/Unity-Texture-Packer"
+}

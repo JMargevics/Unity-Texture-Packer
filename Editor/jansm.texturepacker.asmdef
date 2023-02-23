@@ -1,0 +1,22 @@
+{
+    "name": "jansm.texturepacker",
+    "references": [
+        "System",
+        "UnityEditor",
+        "UnityEngine",
+        "UnityEngine.Rendering",
+        "UnityEditor.UIElements",
+        "UnityEngine.UIElements",
+        "System.IO",
+        "System.Collections",
+        "System.Collections.Generic"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "noEngineReferences": false
+}

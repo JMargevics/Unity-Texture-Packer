@@ -70,8 +70,8 @@ public class TexturePacker : EditorWindow
     private void OnEnable()
     {
         root = rootVisualElement;
-        root.styleSheets.Add(AssetDatabase.LoadAssetAtPath<StyleSheet>("Assets/TexturePacker/UI/style.uss"));
-        var UXMLTree = AssetDatabase.LoadAssetAtPath<VisualTreeAsset>("Assets/TexturePacker/UI/index.uxml");
+        root.styleSheets.Add(AssetDatabase.LoadAssetAtPath<StyleSheet>("Packages/com.jansm.texturepacker/Editor/UI/style.uss"));
+        var UXMLTree = AssetDatabase.LoadAssetAtPath<VisualTreeAsset>("Packages/com.jansm.texturepacker/Editor/UI/index.uxml");
         UXMLTree.CloneTree(root);
 
         outputTextureSettings.name = "TextureName";

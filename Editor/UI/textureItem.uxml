@@ -1,6 +1,6 @@
 <UXML xmlns="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xmlns:uiex="UnityEditor.Experimental.UIElements">
-<Template path="Assets/TexturePacker/UI/input.uxml" name="TextureInput" />
-<Template path="Assets/TexturePacker/UI/channel.uxml" name="Channels" />
+<Template path="Packages/com.jansm.texturepacker/Editor/UI/input.uxml" name="TextureInput" />
+<Template path="Packages/com.jansm.texturepacker/Editor/UI/channel.uxml" name="Channels" />
   
   <VisualElement class="texture-item-container">
     <uiex:ToolbarMenu name="ToolbarMode">

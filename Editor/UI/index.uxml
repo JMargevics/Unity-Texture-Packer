@@ -1,6 +1,6 @@
 <UXML xmlns="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xmlns:uiex="UnityEditor.Experimental.UIElements">
-  <Template path="Assets/TexturePacker/UI/header.uxml" name="header" />
-  <Template path="Assets/TexturePacker/UI/textureItem.uxml" name="TextureItem" />
+  <Template path="Packages/com.jansm.texturepacker/Editor/UI/header.uxml" name="header" />
+  <Template path="Packages/com.jansm.texturepacker/Editor/UI/textureItem.uxml" name="TextureItem" />
   
   <VisualElement class="root">
     <Instance template="header" name="Header" />
